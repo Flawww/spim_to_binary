@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include <algorithm>
+#include "helpers.h"
 
 enum SECTIONS : int {
     INVALID_SECTION = -1,
@@ -89,7 +90,14 @@ int main(int argc, char** argv) {
                 if (ss.fail()) {
                     throw std::runtime_error("stringstream failed to write hex value to 'val'\n");
                 }
-                bytes.push_back(val);
+
+                // For some reason spim does relative branches from "PC" instead of "PC + 4" - let's fix that by subtracting 1 instruction (4 bytes) from the imm.
+                instruction inst(val);
+                if (inst.i.opcode >= BEQ && inst.i.opcode <= BGTZ) {
+                    inst.i.imm = bit_cast<int16_t>(inst.i.imm) - 1;
+                }
+
+                bytes.push_back(inst.hex);
             }
             else { // DATA AND KDATA
                 if (ss.peek() == '.') { // padding
