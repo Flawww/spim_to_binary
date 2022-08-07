@@ -24,6 +24,8 @@ User Text Segment [00400000]..[00440000]
 # Output
 The output is one binary file per section, if the specific section exists in the text file. The file name(s) will be the name of the text file, with the name of the section added as a filename extension.
 
+The parser also fixes Spim's relative branch instructions. For some reason, Spim calculates the relative address from `PC` instead of `PC+4`, which is not what MIPS is supposed to do. 
+
 A QtSpim-format text file with sections `.text`, `.data` and `.ktext`, that has the name `exmpl.txt` produces the following binary files:
 ```
 exmpl.text
